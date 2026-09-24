@@ -63,3 +63,5 @@ em.s-reported{background:#fff4d6;color:#8a6a1a}
 .propgrid{grid-template-columns:1fr}.pagetitle{flex-wrap:wrap;gap:10px}.btns{flex-wrap:wrap}
 #mform{grid-template-columns:1fr}.sheet{padding:22px 18px}
 }
+.months.m6{display:flex;gap:30px;padding:0 25px;word-spacing:0}.months.m6 span{flex:1;text-align:center}
+.pagetitle .primary{white-space:nowrap}
