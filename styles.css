@@ -65,3 +65,16 @@ em.s-reported{background:#fff4d6;color:#8a6a1a}
 }
 .months.m6{display:flex;gap:30px;padding:0 25px;word-spacing:0}.months.m6 span{flex:1;text-align:center}
 .pagetitle .primary{white-space:nowrap}
+.chb{display:inline-block;font-size:7px;font-weight:700;letter-spacing:.06em;padding:3px 6px;border-radius:3px;color:#fff;vertical-align:middle;margin-left:4px;text-transform:uppercase;font-style:normal}.chb.ch-airbnb{background:#ff5a5f}.chb.ch-booking{background:#003580}
+.chgrid{grid-template-columns:repeat(3,1fr);margin:15px 0}.chcard{display:flex;flex-direction:column}.chcard>p{font-size:9px;color:var(--muted);line-height:1.6;flex:1}.chcard.on{border-color:#9cc3b4}
+.chhead{display:flex;align-items:center;gap:10px}.chhead h3{margin:0 0 4px}.chhead small{font-size:7px;letter-spacing:.13em;color:#768983}.chhead em{margin-left:auto}
+.chlogo{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;flex:none;background:#f4f6f3}.chlogo svg{width:24px;height:24px}.chlogo.ch-airbnb{color:#ff5a5f;background:#fff0f0}.chlogo.ch-booking{color:#003580;background:#e8eef8}.chlogo.ch-own{background:var(--deep);color:#e9d7b4;font:italic 16px 'Instrument Serif'}
+em.s-live{background:#e6f0eb;color:#3c7562;font-size:7px;padding:5px;font-style:normal}
+.chstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 4px;flex:1}.chstats dt{font-size:7px;letter-spacing:.1em;color:#768983;text-transform:uppercase}.chstats dd{margin:4px 0 0;font-size:11px;font-weight:700}
+.syncing{margin:18px 0 6px;flex:1;display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center}.syncmsg{margin:0;font-size:10px;font-weight:600}.bar{grid-column:1/-1;height:5px;background:#eef1ef;border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;width:5%;background:linear-gradient(90deg,#62a08a,#1b5148);transition:width .6s ease}
+.spin{width:16px;height:16px;border:2px solid #cfe0d8;border-top-color:#1b5148;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.copyrow{display:flex;gap:6px;margin-top:12px}.copyrow input{flex:1;min-width:0;border:1px solid var(--line);border-radius:20px;padding:7px 11px;font:10px 'DM Sans';color:var(--muted)}
+.chbottom{margin-top:0}.chbottom .hrow{display:flex;align-items:center;gap:8px;font-size:10px;margin:0;padding:9px 0;border-top:1px solid var(--line)}.chbottom .hrow b{flex:1}.chbottom .hrow span{color:var(--muted)}
+.logrow{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:9px;margin:0;padding:8px 0;border-top:1px solid var(--line)}.logrow .chb{margin:0}.logrow time{color:#96a29e;font-size:8px;white-space:nowrap}.logrow.new span:nth-child(2){font-weight:600}.logrow.warn span:nth-child(2){color:#a4473b}
+.mnote{font-size:10px;color:var(--muted);line-height:1.5;margin:0}.brk{word-break:break-all;font-weight:400!important;font-size:9px}
+@media(max-width:700px){.chgrid{grid-template-columns:1fr}.chstats{grid-template-columns:1fr 1fr 1fr}}
