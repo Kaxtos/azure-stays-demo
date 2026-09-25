@@ -68,7 +68,7 @@ function seed(){
 }
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
-if(!S||!S.properties)S=seed();
+if(!S||!S.properties)S=seed();S.channels=S.channels||{};
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Could not save in this browser (storage full) - changes last until you reload.')}};
 const nid=p=>p+(++S.seq);
 const P=()=>S.properties.find(p=>p.id===S.current)||S.properties[0];
@@ -113,20 +113,20 @@ const opt=(v,cur,label)=>`<option value="${esc(v)}"${String(v)===String(cur)?' s
 const field=(label,html,wide)=>`<label class="f${wide?' wide':''}"><span>${label}</span>${html}</label>`;
 
 /* ---------- render ---------- */
-function renderAll(){renderChrome();renderOverview();renderProperties();renderBookings();renderCleaning();renderMaintenance();renderStatements();tab(tabNow)}
+function renderAll(){renderChrome();renderOverview();renderProperties();renderBookings();renderCleaning();renderMaintenance();renderStatements();renderChannels();tab(tabNow)}
 function renderChrome(){
   const p=P(),opts=S.properties.map(x=>opt(x.id,p.id,x.name)).join('');
   document.querySelectorAll('.propSelect').forEach(s=>s.innerHTML=opts);
   $('#propArea').textContent=p.area;
   $('#nProps').textContent=S.properties.length;
   const u=upcomingBookings(p.id).length,o=openIssues(p.id).length,c=S.cleans.filter(x=>x.prop===p.id&&x.status!=='done'&&x.date>=TODAY).length;
-  $('#nBook').textContent=u||'';$('#nMaint').textContent=o||'';$('#nClean').textContent=c||'';
+  $('#nBook').textContent=u||'';const nc=Object.keys(CH).filter(k=>chState(p.id,k).connected).length;$('#nCh').textContent=nc?nc+'/2':'';$('#nMaint').textContent=o||'';$('#nClean').textContent=c||'';
 }
 function renderOverview(){
   const p=P(),st=statement(p.id,CUR),oc=occupancy(p.id,CUR),bk=st.bookings,nt=bk.reduce((s,b)=>s+nights(b.start,b.end),0);
   const months=['2026-04','2026-05','2026-06','2026-07','2026-08',CUR],vals=months.map(m=>m===CUR?st.gross:((p.history||{})[m]?.gross||0)),max=Math.max(...vals,1),ytd=vals.reduce((a,b)=>a+b,0);
   const ev=[];
-  S.bookings.filter(b=>b.prop===p.id&&b.status!=='CANCELLED'&&b.start>=TODAY).forEach(b=>ev.push({date:b.start,k:b.type==='owner'?'OWNER STAY':'CHECK-IN',t:b.type==='owner'?'Owner stay · '+nights(b.start,b.end)+' nights':b.guest+' · '+nights(b.start,b.end)+' nights',s:b.guests+' guests · Booking #'+b.ref,time:'15:00',act:`data-action="booking" data-id="${b.id}"`}));
+  S.bookings.filter(b=>b.prop===p.id&&b.status!=='CANCELLED'&&b.start>=TODAY).forEach(b=>ev.push({date:b.start,k:b.type==='owner'?'OWNER STAY':'CHECK-IN',t:b.type==='owner'?'Owner stay · '+nights(b.start,b.end)+' nights':b.guest+' · '+nights(b.start,b.end)+' nights'+(b.source?' · '+b.channel:''),s:b.guests+' guests · Booking #'+b.ref,time:'15:00',act:`data-action="booking" data-id="${b.id}"`}));
   S.cleans.filter(c=>c.prop===p.id&&c.status!=='done'&&c.date>=TODAY).forEach(c=>ev.push({date:c.date,k:'CLEANING',t:c.type,s:c.assignee?'Assigned to '+c.assignee:'Team pending',time:c.time,act:'data-tab="cleaning"'}));
   S.issues.filter(i=>i.prop===p.id&&i.status!=='completed'&&i.date>=TODAY).forEach(i=>ev.push({date:i.date,k:'MAINTENANCE',t:i.title,s:i.vendor||'Contractor to be assigned',time:'09:00',act:'data-tab="maintenance"'}));
   ev.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
@@ -154,7 +154,7 @@ function renderBookingRows(){
   const q=bq.trim().toLowerCase();
   let list=mine(S.bookings).sort((a,b)=>a.start<b.start?1:-1);
   list=list.filter(b=>{const s=bStatus(b);if(bf==='upcoming'&&!(b.start>TODAY&&s!=='CANCELLED'))return false;if(bf!=='all'&&bf!=='upcoming'&&s!==bf)return false;return !q||(b.guest+' '+b.ref).toLowerCase().includes(q)});
-  $('#btbody').innerHTML=list.map(b=>{const s=bStatus(b);return`<tr class="clickable" data-action="booking" data-id="${b.id}"><td><b>${esc(b.guest)}</b><small>#${esc(b.ref)}</small></td><td>${range(b.start,b.end)}</td><td>${nights(b.start,b.end)}</td><td>${b.guests}</td><td>${b.type==='owner'?'-':money(b.total)}</td><td><em class="s-${s.replace(/\s/g,'-').toLowerCase()}">${s}</em></td><td class="chev">›</td></tr>`}).join('')||`<tr><td colspan="7" class="empty">No bookings match. <a href="#" data-action="add-booking">Add one →</a></td></tr>`;
+  $('#btbody').innerHTML=list.map(b=>{const s=bStatus(b);return`<tr class="clickable" data-action="booking" data-id="${b.id}"><td><b>${esc(b.guest)} ${chBadge(b)}</b><small>#${esc(b.ref)}${b.source?' · via '+esc(b.channel):''}</small></td><td>${range(b.start,b.end)}</td><td>${nights(b.start,b.end)}</td><td>${b.guests}</td><td>${b.type==='owner'?'-':money(b.total)}</td><td><em class="s-${s.replace(/\s/g,'-').toLowerCase()}">${s}</em></td><td class="chev">›</td></tr>`}).join('')||`<tr><td colspan="7" class="empty">No bookings match. <a href="#" data-action="add-booking">Add one →</a></td></tr>`;
 }
 function renderCleaning(){
   const list=mine(S.cleans).sort((a,b)=>a.date<b.date?-1:1),up=list.filter(c=>c.status!=='done'),done=list.filter(c=>c.status==='done').reverse();
@@ -175,7 +175,7 @@ function renderStatements(){
   const st=statement(p.id,stYm);
   const lines=[['Gross booking revenue',money(st.gross)],['Management fee (15%)','- '+money(st.fee)],[`Cleaning & supplies (${st.cleans} clean${st.cleans==1?'':'s'})`,'- '+money(st.clean)],['Maintenance','- '+money(st.maint)]];
   $('#statements').innerHTML=`<div class="pagetitle"><div><small>FINANCE · ${esc(p.name.toUpperCase())}</small><h2>Owner statements</h2></div><div class="btns"><select id="stmonth">${months.map(m=>opt(m,stYm,ymLabel(m))).join('')}</select><button class="primary" data-action="pdf" data-ym="${stYm}">↓ Download ${MONL[+stYm.slice(5)-1]} PDF</button></div></div>
-  <div class="cards"><article class="panel statement"><small>${ymLabel(stYm).toUpperCase()}${stYm===CUR?' · UPDATES LIVE':''}</small><h3>${esc(p.name)}</h3>${lines.map(l=>`<p><span>${l[0]}</span><b>${l[1]}</b></p>`).join('')}<hr><p class="net"><span>Net owner payout</span><b>${money(st.net)}</b></p>${st.bookings?`<details><summary>${st.bookings.length} stays included</summary>${st.bookings.map(b=>`<p><span>${esc(b.guest)} · ${range(b.start,b.end)}</span><b>${money(b.total)}</b></p>`).join('')||'<p>No stays yet this month.</p>'}</details>`:''}</article>
+  <div class="cards"><article class="panel statement"><small>${ymLabel(stYm).toUpperCase()}${stYm===CUR?' · UPDATES LIVE':''}</small><h3>${esc(p.name)}</h3>${lines.map(l=>`<p><span>${l[0]}</span><b>${l[1]}</b></p>`).join('')}<hr><p class="net"><span>Net owner payout</span><b>${money(st.net)}</b></p>${st.bookings?`<details><summary>${st.bookings.length} stays included</summary>${st.bookings.map(b=>`<p><span>${esc(b.guest)} ${chBadge(b)} · ${range(b.start,b.end)}</span><b>${money(b.total)}</b></p>`).join('')||'<p>No stays yet this month.</p>'}</details>`:''}</article>
   <article class="panel"><small>STATEMENT HISTORY</small><h3>All statements</h3>${months.map((m,i)=>{const s=statement(p.id,m);return`${i?'<hr>':''}<p class="hrow"><b>${ymLabel(m)}</b><span>${money(s.net)}</span><button class="link" data-action="pdf" data-ym="${m}">↓ PDF</button></p>`}).join('')}<hr><p class="hrow"><b>Bookings export</b><span></span><button class="link" data-action="csv">↓ CSV</button></p></article></div>`;
   $('#stmonth').onchange=e=>{stYm=e.target.value;renderStatements()};
 }
@@ -232,7 +232,7 @@ const A={
     })},
   'booking'(el){const b=S.bookings.find(x=>x.id===el.dataset.id);if(!b)return;const s=bStatus(b),p=S.properties.find(x=>x.id===b.prop),editable=!['COMPLETED','CANCELLED','IN HOUSE'].includes(s);
     modal(esc(b.guest)+' <small>#'+esc(b.ref)+'</small>',
-    `<dl class="dl"><dt>Property</dt><dd>${esc(p.name)}</dd><dt>Stay</dt><dd>${fd(b.start)} → ${fd(b.end)} · ${nights(b.start,b.end)} nights</dd><dt>Guests</dt><dd>${b.guests}</dd><dt>Total</dt><dd>${b.type==='owner'?'Owner stay':money(b.total)}</dd><dt>Channel</dt><dd>${esc(b.channel||'Direct')}</dd><dt>Status</dt><dd>${s}</dd></dl>`+
+    `<dl class="dl"><dt>Property</dt><dd>${esc(p.name)}</dd><dt>Stay</dt><dd>${fd(b.start)} → ${fd(b.end)} · ${nights(b.start,b.end)} nights</dd><dt>Guests</dt><dd>${b.guests}</dd><dt>Total</dt><dd>${b.type==='owner'?'Owner stay':money(b.total)}</dd><dt>Channel</dt><dd>${esc(b.channel||'Direct')}${b.source?' · synced via iCal '+ago(b.synced)+' '+chBadge(b):''}</dd><dt>Status</dt><dd>${s}</dd></dl>`+
     (editable&&b.type==='guest'?field('Change status',`<select name="status">${opt('CONFIRMED',b.status)}${opt('DEPOSIT PAID',b.status)}${opt('PAID IN FULL',b.status)}</select>`,1):''),
     editable&&b.type==='guest'?'Save':null,d=>{b.status=d.status;save();renderAll();toast('Booking #'+b.ref+' updated.')},
     s!=='CANCELLED'&&s!=='COMPLETED'?`<button type="button" class="danger" data-action="cancel-booking" data-id="${b.id}">Cancel booking</button>`:'')},
@@ -261,6 +261,105 @@ const A={
 document.addEventListener('click',e=>{const el=e.target.closest('[data-action]');if(!el)return;const f=A[el.dataset.action];if(!f)return;e.preventDefault();f(el)});
 document.addEventListener('change',e=>{if(e.target.classList.contains('propSelect')){S.current=e.target.value;save();renderAll()}});
 
+/* ---------- channel sync (Airbnb / Booking.com via iCal, simulated) ---------- */
+const CH={
+  airbnb:{name:'Airbnb',short:'Airbnb',color:'#ff5a5f',logo:'<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 2.5c-1.6 0-2.8.9-3.7 2.6L4.6 20.6c-.5 1-.8 2-.8 3 0 3.2 2.5 5.9 5.8 5.9 2.3 0 4.3-1.3 6.4-3.6 2.1 2.3 4.1 3.6 6.4 3.6 3.3 0 5.8-2.7 5.8-5.9 0-1-.3-2-.8-3L19.7 5.1C18.8 3.4 17.6 2.5 16 2.5Zm0 17.2c-1.3-1.7-2.2-3.4-2.2-4.8 0-1.4 1-2.4 2.2-2.4s2.2 1 2.2 2.4c0 1.4-.9 3.1-2.2 4.8Zm6.4 7.3c-1.6 0-3.1-1-4.9-2.9 2.1-2.6 3.3-5 3.3-7.2 0-2.9-2.1-5-4.8-5s-4.8 2.1-4.8 5c0 2.2 1.2 4.6 3.3 7.2-1.8 1.9-3.3 2.9-4.9 2.9-1.9 0-3.3-1.5-3.3-3.4 0-.6.1-1.2.5-1.9l7.7-15.5c.5-1 .9-1.3 1.5-1.3s1 .3 1.5 1.3l7.7 15.5c.3.7.5 1.3.5 1.9 0 1.9-1.4 3.4-3.3 3.4Z"/></svg>',
+    ical:id=>'https://www.airbnb.com/calendar/ical/'+id+'.ics?s=8f3a2c71d9e04b6a',help:'In Airbnb: Listing → Availability → Connect calendars → Export calendar'},
+  booking:{name:'Booking.com',short:'Booking',color:'#003580',logo:'<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="6" fill="currentColor"/><text x="7" y="23" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="19" fill="#fff">B.</text></svg>',
+    ical:id=>'https://admin.booking.com/hotel/hoteladmin/ical.html?t=5b1e9d4c-'+id,help:'In the Extranet: Rates & Availability → Sync calendars → Export'}
+};
+/* reservations waiting on each channel (what the iCal feed would return) */
+const FEED={
+  vt:{airbnb:[['Julia Nowak','2026-10-15','2026-10-19',3,1010],['Tom & Priya Harris','2026-10-26','2026-10-31',5,1325],['Marco Bianchi','2026-11-04','2026-11-08',2,880]],
+      booking:[['Kevin Walsh','2026-09-21','2026-09-22',2,265],['Pieter de Vries','2026-11-12','2026-11-16',4,905]]},
+  oh:{airbnb:[['Lucas Moreau','2026-09-25','2026-09-29',2,760],['Emily Clarke','2026-10-16','2026-10-20',3,720]],
+      booking:[['Ingrid Larsen','2026-10-09','2026-10-13',2,705],['Daniel Novak','2026-10-24','2026-10-28',4,735]]}
+};
+const GEN={airbnb:[['Sarah Mitchell',32,4],['Oliver Grant',47,5],['Chiara Conti',61,3]],booking:[['Jonas Weber',39,3],['Aylin Demir',54,4]]};
+function feedFor(pid,ch){
+  if(FEED[pid])return FEED[pid][ch];
+  const p=S.properties.find(x=>x.id===pid),base=dt(TODAY).getTime();
+  return GEN[ch].map(([g,off,n],i)=>{const a=iso(new Date(base+off*864e5)),b=iso(new Date(base+(off+n)*864e5));return[g,a,b,Math.min(2+i,p.guests||2),Math.round(n*(p.rate||150)*.94)]});
+}
+const chRef=(ch,pid,i)=>{let h=2166136261;for(const c of pid+'|'+ch+'|'+i+'|stays'){h^=c.charCodeAt(0);h=Math.imul(h,16777619)>>>0}h=Math.imul(h^(h>>>13),2246822507)>>>0;h=(h^(h>>>16))>>>0;return ch==='airbnb'?'HM'+(h.toString(36).toUpperCase()+'QZ7K4R').slice(0,8):String(3000000000+h%999999999)};
+const chState=(pid,ch)=>{S.channels=S.channels||{};S.channels[pid]=S.channels[pid]||{};return S.channels[pid][ch]=S.channels[pid][ch]||{connected:false,log:[],released:0}};
+const chBadge=b=>{const k=b.source;return k&&CH[k]?`<span class="chb ch-${k}">${CH[k].short}</span>`:''};
+const ago=t=>{if(!t)return'never';const m=Math.round((Date.now()-t)/6e4);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
+function chLog(pid,ch,msg,kind='ok'){const s=chState(pid,ch);s.log.unshift({t:Date.now(),n:S.lseq=(S.lseq||0)+1,msg,kind});s.log=s.log.slice(0,12)}
+
+/* pull the feed: import new reservations, skip clashes, count exports */
+function runSync(pid,ch,first){
+  const p=S.properties.find(x=>x.id===pid),s=chState(pid,ch),feed=feedFor(pid,ch),c=CH[ch];
+  const upto=first?Math.min(2,feed.length):Math.min(feed.length,s.released+1);
+  let added=[],skipped=[];
+  feed.slice(0,upto).forEach(([guest,start,end,guests,total],i)=>{
+    const ref=chRef(ch,pid,i);
+    if(S.bookings.some(b=>b.ref===ref))return;
+    if(s.dismissed&&s.dismissed.includes(ref))return;
+    const clash=S.bookings.find(b=>b.prop===pid&&b.status!=='CANCELLED'&&start<b.end&&b.start<end);
+    if(clash){skipped.push({guest,start,end,clash});return}
+    const b={id:ref,ref,prop:pid,guest,start,end,guests,total,status:'CONFIRMED',type:'guest',channel:c.name,source:ch,synced:Date.now()};
+    S.bookings.push(b);added.push(b);
+    S.cleans.push({id:nid('c'),prop:pid,date:end,time:'11:00',type:'Turnover clean',note:'After '+guest+' ('+c.name+')',assignee:'',status:'scheduled',bookingId:ref});
+  });
+  s.released=upto;s.lastSync=Date.now();
+  const exported=S.bookings.filter(b=>b.prop===pid&&b.status!=='CANCELLED'&&b.end>TODAY&&b.source!==ch).length;
+  added.forEach(b=>chLog(pid,ch,`Imported ${b.guest} · ${range(b.start,b.end)} · ${money(b.total)}`,'new'));
+  skipped.forEach(x=>chLog(pid,ch,`Not imported: ${x.guest} ${range(x.start,x.end)} overlaps ${x.clash.guest} (${range(x.clash.start,x.clash.end)}) - possible double booking`,'warn'));
+  chLog(pid,ch,added.length||skipped.length?`Sync complete · ${exported} dates blocked on ${c.name}`:`No changes · ${exported} dates blocked on ${c.name}`);
+  return{added,skipped,exported};
+}
+let syncing={};
+function animateSync(pid,ch,first,done){
+  const key=pid+ch;if(syncing[key])return;syncing[key]=1;
+  const steps=first?['Connecting to '+CH[ch].name+'…','Reading calendar feed…','Matching reservations…','Blocking your other bookings…']:['Checking '+CH[ch].name+' calendar…','Matching reservations…','Updating blocked dates…'];
+  let i=0;const tick=()=>{const el=document.querySelector(`[data-sync="${key}"]`);if(el){el.querySelector('.syncmsg').textContent=steps[Math.min(i,steps.length-1)];el.querySelector('.bar i').style.width=Math.round((i+1)/steps.length*100)+'%'}
+    if(i++<steps.length){setTimeout(tick,650)}else{delete syncing[key];const r=runSync(pid,ch,first);save();renderAll();done&&done(r)}};
+  renderChannels();tick();
+}
+function syncToast(ch,r,first){
+  const c=CH[ch].name;let m=first?c+' connected · ':c+' synced · ';
+  m+=r.added.length?r.added.length+' new reservation'+(r.added.length>1?'s':'')+' imported':'no new reservations';
+  if(r.skipped.length)m+=' · '+r.skipped.length+' overlap flagged';
+  if(r.added.some(b=>inMonth(b.start,CUR)))m+=' · September statement updated';
+  toast(m);
+}
+function renderChannels(){
+  const p=P(),box=$('#channels');if(!box)return;
+  const ids=Object.keys(CH),conn=ids.filter(k=>chState(p.id,k).connected);
+  const imported=S.bookings.filter(b=>b.prop===p.id&&b.source&&b.status!=='CANCELLED');
+  const card=k=>{const c=CH[k],s=chState(p.id,k),key=p.id+k,busy=syncing[key],n=imported.filter(b=>b.source===k).length;
+    return`<article class="panel chcard${s.connected?' on':''}" data-sync="${key}"><div class="chhead"><span class="chlogo ch-${k}">${c.logo}</span><div><h3>${c.name}</h3><small>${s.connected?'CONNECTED · iCAL':'NOT CONNECTED'}</small></div>${s.connected&&!busy?'<em class="s-live">● LIVE</em>':''}</div>
+    ${busy?`<div class="syncing"><span class="spin"></span><p class="syncmsg">Starting…</p><div class="bar"><i></i></div></div>`:
+    s.connected?`<dl class="chstats"><div><dt>Last sync</dt><dd>${ago(s.lastSync)}</dd></div><div><dt>Reservations</dt><dd>${n} imported</dd></div><div><dt>Auto-sync</dt><dd>Every 30 min</dd></div></dl>
+      <div class="cact"><button class="primary sm" data-action="ch-sync" data-ch="${k}">⟳ Sync now</button><button class="outline sm" data-action="ch-details" data-ch="${k}">Details</button></div>`:
+    `<p>Pull ${c.name} reservations into this calendar and block your other bookings on ${c.name}, so nothing gets double-booked.</p><div class="cact"><button class="primary sm" data-action="ch-connect" data-ch="${k}">Connect ${c.name}</button></div>`}</article>`};
+  const log=[];ids.forEach(k=>chState(p.id,k).log.forEach(l=>log.push({...l,k})));log.sort((a,b)=>b.t-a.t||(b.n||0)-(a.n||0));
+  box.innerHTML=`<div class="pagetitle"><div><small>DISTRIBUTION · ${esc(p.name.toUpperCase())}</small><h2>Channels</h2></div>${conn.length?`<button class="primary" data-action="ch-syncall">⟳ Sync all channels</button>`:''}</div>
+  <div class="notice">${conn.length?`✓　 <b>${conn.length} of ${ids.length} channels connected.</b> ${imported.length} channel reservation${imported.length==1?'':'s'} in your calendar - they sit alongside direct bookings, get turnover cleans and flow into your statement.`:`<b>One calendar for every channel.</b> Connect Airbnb and Booking.com and their reservations land here automatically, next to your direct bookings.`}</div>
+  <div class="cards chgrid">${ids.map(card).join('')}<article class="panel chcard"><div class="chhead"><span class="chlogo ch-own">AS</span><div><h3>Your calendar feed</h3><small>EXPORT · iCAL</small></div></div><p>Give this link to any other site (Vrbo, Expedia, Google Calendar) to block dates you've already sold.</p><div class="copyrow"><input readonly value="https://stays.streamlinecy.com/ical/${esc(p.id)}-7c21.ics"><button class="outline sm" data-action="ch-copy">Copy</button></div></article></div>
+  <div class="twocol chbottom"><article class="panel"><small>CHANNEL RESERVATIONS</small><h3>Imported bookings</h3>${imported.length?imported.sort((a,b)=>a.start<b.start?-1:1).map(b=>`<p class="hrow clickable" data-action="booking" data-id="${b.id}"><b>${esc(b.guest)} ${chBadge(b)}</b><span>${range(b.start,b.end)} · ${money(b.total)}</span><span class="chev">›</span></p>`).join(''):'<p class="empty">Nothing imported yet - connect a channel above.</p>'}</article>
+  <article class="panel"><small>ACTIVITY</small><h3>Sync log</h3>${log.length?log.slice(0,8).map(l=>`<p class="logrow ${l.kind}"><span class="chb ch-${l.k}">${CH[l.k].short}</span><span>${esc(l.msg)}</span><time>${ago(l.t)}</time></p>`).join(''):'<p class="empty">No syncs yet.</p>'}</article></div>`;
+}
+Object.assign(A,{
+  'ch-connect'(el){const k=el.dataset.ch,c=CH[k],p=P(),lid=String(40000000+([...p.id].reduce((s,x)=>s+x.charCodeAt(0),0)*7919)%9999999);
+    modal('Connect '+c.name+' · '+esc(p.name),`<p class="f wide mnote">Paste the calendar (iCal) link for this listing. ${esc(c.help)}.</p>`+
+      field(c.name+' calendar link *',`<input name="url" value="${esc(c.ical(lid))}">`,1)+
+      `<label class="f wide chk"><input type="checkbox" name="block" checked> Also block my other bookings on ${c.name} (export)</label>`,
+      'Connect & sync',d=>{if(!/^https?:\/\/\S+\.\S+/.test(d.url.trim()))return'That doesn\'t look like a calendar link.';
+        const s=chState(p.id,k);s.connected=true;s.url=d.url.trim();s.connectedAt=Date.now();chLog(p.id,k,'Connected calendar feed');save();tabNow='channels';renderAll();
+        animateSync(p.id,k,true,r=>syncToast(k,r,true))})},
+  'ch-sync'(el){const p=P(),k=el.dataset.ch;animateSync(p.id,k,false,r=>syncToast(k,r,false))},
+  'ch-syncall'(){const p=P(),ks=Object.keys(CH).filter(k=>chState(p.id,k).connected);let left=ks.length,tot=0,sk=0;ks.forEach(k=>animateSync(p.id,k,false,r=>{tot+=r.added.length;sk+=r.skipped.length;if(!--left)toast('All channels synced · '+(tot?tot+' new reservation'+(tot>1?'s':'')+' imported':'everything up to date')+(sk?' · '+sk+' overlap flagged':''))}))},
+  'ch-details'(el){const p=P(),k=el.dataset.ch,c=CH[k],s=chState(p.id,k),n=S.bookings.filter(b=>b.prop===p.id&&b.source===k&&b.status!=='CANCELLED').length;
+    modal(c.name+' · '+esc(p.name),`<dl class="dl"><dt>Status</dt><dd>Connected · auto-sync every 30 min</dd><dt>Calendar link</dt><dd class="brk">${esc(s.url||'')}</dd><dt>Last sync</dt><dd>${ago(s.lastSync)}</dd><dt>Imported</dt><dd>${n} reservation${n==1?'':'s'}</dd></dl>`,null,null,
+      `<button type="button" class="danger" data-action="ch-disconnect" data-ch="${k}">Disconnect</button>`)},
+  'ch-disconnect'(el){const p=P(),k=el.dataset.ch,c=CH[k];if(!confirm('Disconnect '+c.name+'? Upcoming '+c.name+' reservations will be removed from this calendar.'))return;
+    const gone=S.bookings.filter(b=>b.prop===p.id&&b.source===k&&b.start>TODAY).map(b=>b.id);
+    S.bookings=S.bookings.filter(b=>!gone.includes(b.id));S.cleans=S.cleans.filter(x=>!(gone.includes(x.bookingId)&&x.status!=='done'));
+    S.channels[p.id][k]={connected:false,log:[],released:0};save();closeModal();renderAll();toast(c.name+' disconnected'+(gone.length?' · '+gone.length+' upcoming reservation'+(gone.length>1?'s':'')+' removed':'')+'.')},
+  'ch-copy'(el){const i=el.previousElementSibling;i.select();try{navigator.clipboard.writeText(i.value)}catch(e){document.execCommand('copy')}toast('Calendar link copied.')}
+});
 /* ---------- PDF (hand-built, no libraries) ---------- */
 function pdfEsc(s){let o='';for(const ch of String(s)){const c=ch.codePointAt(0);if(ch==='('||ch===')'||ch==='\\')o+='\\'+ch;else if(c>=32&&c<127)o+=ch;else if(ch==='€')o+='\\200';else if(ch==='–'||ch==='—')o+='-';else if(ch==='→')o+='-';else if(c>=160&&c<256)o+='\\'+c.toString(8).padStart(3,'0');else o+='?'}return o}
 function tw(s,size){let w=0;for(const ch of String(s)){w+=/[0-9€]/.test(ch)?556:/[ ,.]/.test(ch)?278:ch==='-'?333:/[A-Z]/.test(ch)?667:/[mw]/.test(ch)?833:/[il]/.test(ch)?222:500}return w*size/1000}
@@ -273,7 +372,7 @@ function statementPDF(p,st){
   T(545,725,'Period',9,0,'0.42 0.48 0.47','r');T(545,710,'1-'+last+' '+ml+' '+yy,10,1,undefined,'r');T(545,690,'Issued 20 September 2026',9,0,'0.42 0.48 0.47','r');
   let y=650;
   if(st.bookings){T(50,y,'STAYS INCLUDED',8,1,'0.81 0.46 0.34');y-=18;T(50,y,'Guest',8,1,'0.42 0.48 0.47');T(230,y,'Booking',8,1,'0.42 0.48 0.47');T(320,y,'Dates',8,1,'0.42 0.48 0.47');T(430,y,'Nights',8,1,'0.42 0.48 0.47');T(545,y,'Revenue',8,1,'0.42 0.48 0.47','r');y-=8;L(y);y-=16;
-    (st.bookings.length?st.bookings:[null]).slice(0,14).forEach(b=>{if(!b){T(50,y,'No stays this month yet.',9,0,'0.42 0.48 0.47');y-=18;return}T(50,y,b.guest,9);T(230,y,'#'+b.ref,9);T(320,y,range(b.start,b.end),9);T(430,y,String(nights(b.start,b.end)),9);T(545,y,money(b.total),9,0,undefined,'r');y-=18});
+    (st.bookings.length?st.bookings:[null]).slice(0,14).forEach(b=>{if(!b){T(50,y,'No stays this month yet.',9,0,'0.42 0.48 0.47');y-=18;return}T(50,y,b.guest,9);T(230,y,(b.source?b.channel+' ':'#')+b.ref,9);T(320,y,range(b.start,b.end),9);T(430,y,String(nights(b.start,b.end)),9);T(545,y,money(b.total),9,0,undefined,'r');y-=18});
     if(st.bookings.length>14){T(50,y,'+ '+(st.bookings.length-14)+' more stays',9,0,'0.42 0.48 0.47');y-=18}y-=14}
   else{T(50,y,'Archived statement - summary figures.',9,0,'0.42 0.48 0.47');y-=30}
   T(50,y,'SUMMARY',8,1,'0.81 0.46 0.34');y-=10;L(y);y-=20;
