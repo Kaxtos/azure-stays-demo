@@ -1,0 +1,146 @@
+[
+  {
+    "slug": "owner-statement",
+    "title": "Owner statement template",
+    "tag": "OWNER REPORTING",
+    "desc": "Turn monthly booking income, fees and expenses into a clear owner payout statement.",
+    "details": [
+      "Owner, property and month selection",
+      "Income, refunds, platform fees and commission",
+      "Printable payout statement with example rows"
+    ],
+    "caveat": "Commission applies to accommodation less accommodation refunds. No tax calculation."
+  },
+  {
+    "slug": "rental-income-expense-tracker",
+    "title": "Rental income & expense tracker",
+    "tag": "MONTHLY NUMBERS",
+    "desc": "Keep bookings, channels and costs together, with a 12-month summary per property.",
+    "details": [
+      "Booking and expense ledgers",
+      "Year and property filters",
+      "Monthly and annual summary in EUR"
+    ],
+    "caveat": "Income and nights fall in the entered posting month. Net contribution is not profit, payout or an occupancy report."
+  },
+  {
+    "slug": "occupancy-adr-revpar",
+    "title": "Occupancy, ADR and RevPAR tracker",
+    "tag": "MONTHLY PERFORMANCE",
+    "desc": "Track monthly occupied nights, available nights, accommodation revenue, ADR and RevPAR by property in a free Excel workbook.",
+    "details": [
+      "Monthly data by property and year",
+      "Available nights, paid nights and accommodation revenue",
+      "Occupancy, ADR and RevPAR summary"
+    ],
+    "caveat": "Split cross-month stays manually and match revenue to occupied nights. Availability excludes the unavailable nights entered; use a consistent policy. Not an STR reporting submission.",
+    "seo_title": "Occupancy, ADR and RevPAR tracker - Free Excel | StreamlineCY",
+    "sample_note": "Sample rows are excluded in LIVE mode.",
+    "instructions": [
+      "Read Instructions before entering your own figures.",
+      "Enter yellow input cells and leave teal formulas unchanged.",
+      "Use LIVE mode for your own records; SAMPLE rows are excluded.",
+      "Check data warnings and totals against source records."
+    ]
+  },
+  {
+    "slug": "management-fee-calculator",
+    "title": "Management fee calculator",
+    "tag": "FEE PLANNING",
+    "desc": "Compare a percentage management fee, a fixed monthly fee and a blended fee for one rental property in EUR.",
+    "details": [
+      "Percentage, fixed and blended fee comparison",
+      "Two selectable accommodation fee bases",
+      "Optional agreed extra service charges"
+    ],
+    "caveat": "Illustration only, not a quote, invoice or market-rate recommendation. Guest cleaning revenue and pass-through expenses are excluded. Residual is not profit or owner payout.",
+    "seo_title": "Management fee calculator - Free Excel | StreamlineCY",
+    "sample_note": "Examples are on a separate sheet and do not enter your live results.",
+    "instructions": [
+      "Read Instructions and save one copy for your task.",
+      "Use the editable yellow inputs; leave teal formulas unchanged.",
+      "The Example sheet is fictional and separate from live work.",
+      "Review all results and task status before relying on the file."
+    ]
+  },
+  {
+    "slug": "cleaning-turnover-checklist",
+    "title": "Cleaning and turnover checklist",
+    "tag": "PROPERTY CARE",
+    "desc": "Plan and sign off rental property turnovers with a reusable cleaning checklist, task owners, status and issue notes.",
+    "details": [
+      "Reusable turnover task list",
+      "Task owners, status and checked dates",
+      "Progress summary excluding N/A tasks"
+    ],
+    "caveat": "Not a safety inspection, cleaning certification or guarantee of readiness. Do not store guest details, access codes or other private information.",
+    "seo_title": "Cleaning and turnover checklist - Free Excel | StreamlineCY",
+    "sample_note": "Examples are on a separate sheet and do not enter your live results.",
+    "instructions": [
+      "Read Instructions and save one copy for your task.",
+      "Use the editable yellow inputs; leave teal formulas unchanged.",
+      "The Example sheet is fictional and separate from live work.",
+      "Review all results and task status before relying on the file."
+    ]
+  },
+  {
+    "slug": "guest-check-in-check-out-checklist",
+    "title": "Guest check-in and check-out checklist",
+    "tag": "GUEST HANDOVERS",
+    "desc": "Keep guest arrival and departure handovers organised with a free rental checklist for property managers.",
+    "details": [
+      "Arrival and departure task list",
+      "Task owners, status and checked dates",
+      "Separate fictional example sheet"
+    ],
+    "caveat": "Not a legal, registration, accessibility or identity-check compliance checklist. Do not store guest names, passport data or access codes.",
+    "seo_title": "Guest check-in and check-out checklist - Free Excel | StreamlineCY",
+    "sample_note": "Examples are on a separate sheet and do not enter your live results.",
+    "instructions": [
+      "Read Instructions and save one copy for your task.",
+      "Use the editable yellow inputs; leave teal formulas unchanged.",
+      "The Example sheet is fictional and separate from live work.",
+      "Review all results and task status before relying on the file."
+    ]
+  },
+  {
+    "slug": "calendar-channel-sync-checklist",
+    "title": "Calendar and channel-sync checklist",
+    "tag": "CALENDAR CHECKS",
+    "desc": "Map rental listing calendars, test both sync directions and log availability checks with a free Excel checklist.",
+    "details": [
+      "Calendar mapping and manual sync checks",
+      "Two-direction testing checklist",
+      "Sync notes and channel help references"
+    ],
+    "caveat": "Manual checklist only. No live integration or double-booking prevention. iCal is not real-time or a full channel manager. Never enter private calendar feed URLs.",
+    "seo_title": "Calendar and channel-sync checklist - Free Excel | StreamlineCY",
+    "sample_note": "Examples are on a separate sheet and do not enter your live results.",
+    "instructions": [
+      "Read Instructions and save one copy for your task.",
+      "Use the editable yellow inputs; leave teal formulas unchanged.",
+      "The Example sheet is fictional and separate from live work.",
+      "Review all results and task status before relying on the file."
+    ]
+  },
+  {
+    "slug": "maintenance-request-log",
+    "title": "Maintenance request log",
+    "tag": "PROPERTY CARE",
+    "desc": "Track rental property maintenance requests, priorities, owners, due dates, costs and open issues in a free Excel template.",
+    "details": [
+      "Request IDs, properties, priorities and assigned owners",
+      "Due dates, estimates and actual costs",
+      "Open/overdue summary using an entered as-of date"
+    ],
+    "caveat": "Not an emergency response service or professional safety inspection. Urgent hazards need your established emergency procedure. No amount is automatically charged to an owner.",
+    "seo_title": "Maintenance request log - Free Excel | StreamlineCY",
+    "sample_note": "Sample rows are excluded in LIVE mode.",
+    "instructions": [
+      "Read Instructions before entering your own figures.",
+      "Enter yellow input cells and leave teal formulas unchanged.",
+      "Use LIVE mode for your own records; SAMPLE rows are excluded.",
+      "Check data warnings and totals against source records."
+    ]
+  }
+]

@@ -1,0 +1,20 @@
+# Stays by StreamlineCY
+
+Custom short-term rental management system demonstration for Cyprus rental operators. Azure Stays is the fictional example company, not the product name or a live rental service.
+
+## Main pages
+- [Stays overview](https://stays.streamlinecy.com/): Workflows, interactive dashboard demo, free resources and FAQ.
+- [StreamlineCY](https://streamlinecy.com): The consultancy behind this demo.
+
+## Free templates
+- [Owner statement template](https://stays.streamlinecy.com/templates/owner-statement/): Turn monthly booking income, fees and expenses into a clear owner payout statement.
+- [Rental income & expense tracker](https://stays.streamlinecy.com/templates/rental-income-expense-tracker/): Keep bookings, channels and costs together, with a 12-month summary per property.
+- [Occupancy, ADR and RevPAR tracker](https://stays.streamlinecy.com/templates/occupancy-adr-revpar/): Track monthly occupied nights, available nights, accommodation revenue, ADR and RevPAR by property in a free Excel workbook.
+- [Management fee calculator](https://stays.streamlinecy.com/templates/management-fee-calculator/): Compare a percentage management fee, a fixed monthly fee and a blended fee for one rental property in EUR.
+- [Cleaning and turnover checklist](https://stays.streamlinecy.com/templates/cleaning-turnover-checklist/): Plan and sign off rental property turnovers with a reusable cleaning checklist, task owners, status and issue notes.
+- [Guest check-in and check-out checklist](https://stays.streamlinecy.com/templates/guest-check-in-check-out-checklist/): Keep guest arrival and departure handovers organised with a free rental checklist for property managers.
+- [Calendar and channel-sync checklist](https://stays.streamlinecy.com/templates/calendar-channel-sync-checklist/): Map rental listing calendars, test both sync directions and log availability checks with a free Excel checklist.
+- [Maintenance request log](https://stays.streamlinecy.com/templates/maintenance-request-log/): Track rental property maintenance requests, priorities, owners, due dates, costs and open issues in a free Excel template.
+
+## Important limits
+The demo uses fictional sample data. Changes stay in the visitor's browser. Channel sync is a simulation, not a live integration. Final features, price and delivery are agreed per project. Templates are operational starting points, not accounting, legal or tax advice.

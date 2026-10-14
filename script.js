@@ -1,6 +1,6 @@
 /* Azure Stays Cyprus - interactive demo (client-side, data saved in this browser) */
 const site=document.querySelector('#site'),login=document.querySelector('#login'),dash=document.querySelector('#dashboard');
-const show=x=>{[site,login,dash].forEach(v=>v.classList.add('hide'));x.classList.remove('hide');scrollTo(0,0)};
+const show=x=>{[site,login,dash,document.querySelector('#sample-site')].forEach(v=>v.classList.add('hide'));x.classList.remove('hide');document.querySelector('#demo-bar').classList.toggle('hide',x===site);scrollTo(0,0)};
 document.querySelectorAll('.login').forEach(b=>b.onclick=()=>{show(login);location.hash='login'});
 document.addEventListener('click',e=>{if(e.target.closest('.back')){show(site);location.hash='home';renderSite()}});
 document.querySelector('#loginform').onsubmit=e=>{e.preventDefault();show(dash);location.hash='dashboard';renderAll()};
