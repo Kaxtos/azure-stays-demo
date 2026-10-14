@@ -12,3 +12,6 @@
 .cloud{animation-timing-function:linear;animation-duration:20s}.cloud-2{animation-duration:27s}.cloud-3{animation-duration:24s}.cloud-4{animation-duration:23s}@media(prefers-reduced-motion:reduce){.cloud{animation:none}}
 
 .sky-hero{padding:90px 0 76px}.hero-proof{margin-bottom:0}.sky{background-position:center 45%}@media(max-width:600px){.sky-hero{padding:57px 0 54px}.sky{background-position:54% 38%}}
+
+/* Natural photo motion, without simulated clouds. */
+.sky-hero .cloud{display:none}.sky{inset:-2%;animation:photo-breathe 32s ease-in-out infinite alternate;transform-origin:center center;will-change:transform}@keyframes photo-breathe{from{transform:scale(1) translateX(-.4%)}to{transform:scale(1.035) translateX(.4%)}}@media(prefers-reduced-motion:reduce){.sky{animation:none;transform:none;will-change:auto}}
