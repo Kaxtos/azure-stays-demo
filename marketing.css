@@ -15,3 +15,8 @@
 .software .enquiry-grid label{letter-spacing:normal;text-transform:none}.software .enquiry-grid input,.software .enquiry-grid textarea,.software .enquiry-grid select{letter-spacing:normal}
 
 .form-privacy a{text-decoration:underline;text-underline-offset:3px}
+
+/* Approved anonymous client case */
+.case-proof{background:#f3f1e9;color:#203f34;padding:64px 0}.case-proof h2{font-family:'Instrument Serif',serif;font-size:48px;line-height:1.06;max-width:800px;margin:18px 0 25px;font-weight:400}.case-proof .case-body{font-size:19px;line-height:1.7;max-width:850px}.case-proof .case-note{max-width:850px;font-size:14px;line-height:1.65;color:#59675c;margin:24px 0}.case-actions{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.case-actions .article-link{color:#203f34;text-decoration:underline;font-weight:600;padding:12px 0}.case-proof .s-wrap{max-width:1180px;margin:auto}.template-case{border-radius:16px;padding:42px;margin-top:40px}.template-case h2{font-size:38px}.template-case .case-body{font-size:17px}@media(max-width:600px){.case-proof{padding:40px 0}.case-proof h2{font-size:37px}.case-proof .case-body{font-size:17px}.template-case{padding:28px 22px;margin-top:0}.template-case h2{font-size:32px}.case-proof .case-note{font-size:14px}.case-actions{gap:8px;align-items:stretch;flex-direction:column}.case-actions .s-btn{text-align:center}}
+
+.analytics-notice{font-size:12px!important;line-height:1.7;max-width:850px;margin:28px auto 0;padding:0 18px;color:#637367;text-align:left}
