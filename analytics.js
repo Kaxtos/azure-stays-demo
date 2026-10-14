@@ -36,7 +36,15 @@
     } else if (url.hostname === 'streamlinecy.com' && url.pathname === '/blog/nicosia-property-management-crm-owner-portal-case-study') {
       window.umami.track('case_study_click', data);
     } else if (url.hostname === location.hostname && url.hash === '#enquiry') {
-      window.umami.track('enquiry_cta_click', data);
+      var tracked = window.umami.track('enquiry_cta_click', data);
+      // Give a cross-page request a bounded opportunity to leave before navigation.
+      if (url.pathname !== location.pathname && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.button === 0 && (!link.target || link.target === '_self')) {
+        event.preventDefault();
+        var moved = false;
+        function go() { if (!moved) { moved = true; location.assign(link.href); } }
+        setTimeout(go, 300);
+        Promise.resolve(tracked).then(go, go);
+      }
     }
   });
 })();
