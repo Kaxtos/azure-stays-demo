@@ -22,3 +22,4 @@
 .analytics-notice{font-size:12px!important;line-height:1.7;max-width:850px;margin:28px auto 0;padding:0 18px;color:#637367;text-align:left}
 
 .hero .demo-h1.demo-h1,.loginleft .demo-h1.demo-h1{font:400 clamp(52px,5.5vw,80px)/1.04 'Instrument Serif',serif;letter-spacing:-.025em;margin:25px auto 24px;max-width:990px}.hero .demo-h1.demo-h1{color:var(--ink)}.loginleft .demo-h1.demo-h1{color:#fff}.sky-hero .hero-subhead{font:400 clamp(19px,2.2vw,26px)/1.35 'Instrument Serif',serif;color:#f3e8cf;margin:-6px auto 20px;max-width:640px;text-shadow:0 1px 7px #0c211f}@media(max-width:600px){.hero .demo-h1.demo-h1,.loginleft .demo-h1.demo-h1{font-size:48px;line-height:1.06;margin:24px auto 22px}.sky-hero .hero-subhead{font-size:19px;max-width:340px}}
+.sheet-icon.word-icon:before{content:'DOCX'}
